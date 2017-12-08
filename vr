@@ -28,9 +28,6 @@ virt-install \
     --memory=2048 \
     --vcpus=2 \
     --disk size=10 \
-    --initrd-inject=preseed.cfg \
-    --initrd-inject=postinst.sh \
-    --initrd-inject=grub \
     --location ${DIST_URL} \
     --os-type linux \
     --os-variant=debian9 \
