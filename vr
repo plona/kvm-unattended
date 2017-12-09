@@ -27,7 +27,7 @@ virt-install \
     --name=$1 \
     --memory=2048 \
     --vcpus=2 \
-    --disk size=10 \
+    --disk size=10,cache=none \
     --location ${DIST_URL} \
     --os-type linux \
     --os-variant=debian9 \

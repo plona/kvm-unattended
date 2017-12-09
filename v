@@ -27,7 +27,7 @@ virt-install \
     --name=$1 \
     --memory=2048 \
     --vcpus=2 \
-    --disk size=10 \
+    --disk size=10,cache=none \
     --initrd-inject=preseed.cfg \
     --initrd-inject=postinst.sh \
     --initrd-inject=grub \
