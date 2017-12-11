@@ -1,0 +1,5 @@
+- name: local pre-installation script
+  hosts: localhost
+  tasks:
+    - local_action: script local_scripts/pre-install.sh
+

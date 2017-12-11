@@ -1,0 +1,15 @@
+#!/bin/bash
+set -u
+
+oIFS="$IFS"
+IFS=$'\n' a=($(who | awk '{print $1}' | sort | uniq))
+IFS="$oIFS"
+
+str=''
+for u in ${a[@]}; do
+    s=$(who | grep $u | wc -l)
+    str+="$u:$s,"
+done
+s=${str:0: -1}
+echo $s
+

@@ -1,0 +1,212 @@
+- name: local pre-installation script
+  hosts: localhost
+  pre_tasks:
+    - name: Verify Ansible version.
+      assert:
+        that: "ansible_version.full | version_compare('2.4', '>=')"
+        msg: "You must update Ansible to at least 2.4 to use this playbook."
+  tasks:
+    - local_action: script local_scripts/pre-install.sh
+
+- name: standard installation
+  hosts: new
+  vars:
+    userlist:
+    - root
+    - plona
+    homedirs:
+    - /root
+    - /home/plona
+
+  tasks:
+
+    - name: new sources.list
+      copy:
+        src: templates/etc/apt/sources.list
+        dest: /etc/apt/sources.list
+        owner: root
+        group: root
+        mode: 0644
+        backup: yes
+      become: yes
+
+    - name: update apt cache
+      apt:
+        update_cache: yes
+      become: yes
+
+    - name: install packages
+      apt: name={{ item }} state=installed
+      with_items:
+        - apt-file 
+        - apt-transport-https
+        - binutils
+        - debian-goodies
+        - deborphan
+        - dnsutils 
+        - gawk
+        - git
+        - htop 
+        - less
+        - lsb-release 
+        - lsof
+        - mc 
+        - mlocate 
+        - net-tools
+        - netcat-openbsd
+        - ntp
+        - ntpdate
+        - openssh-server
+        - openssl
+        - parted
+        - pv
+        - resolvconf
+        - rsync
+        - sudo
+        - screen
+        - tcpdump
+        - tmux
+        - tree
+        - tshark
+        - vim
+        - wajig
+      become: yes
+
+    - name: upgrade packages
+      apt:
+        upgrade: full
+        autoremove: yes
+        autoclean: yes
+      become: yes
+
+    - name: create users
+      user:
+        name: "{{ item }}"
+        groups: sudo
+        shell: /bin/bash
+        state: present
+      with_items: "{{ userlist }}"
+      when: item != "root"
+      become: yes
+
+    - name: users passwd
+      shell: echo "{{ item }}:{{ item }}" | chpasswd
+      with_items: "{{ userlist }}"
+      when: item != "root"
+      become: yes
+
+    - name: copy files from local to remote
+      copy:
+        src: "{{ item }}"
+        dest: /tmp/
+      with_fileglob:
+        - files/*.tgz
+      become: yes
+
+    - name: unpack user's dot files & utils
+      unarchive:
+        src: /tmp/home.tgz
+        dest: "{{ item.1 }}"
+        owner: "{{ item.0 }}"
+        group: "{{ item.0 }}"
+        remote_src: yes
+      with_together:
+        - "{{ userlist }}"
+        - "{{ homedirs }}"
+      become: yes
+
+    - name: fix users homes permisions
+      file:
+        path: "{{ item.1 }}"
+        mode: 0700
+        owner: "{{ item.0 }}"
+        group: "{{ item.0 }}"
+      with_together:
+        - "{{ userlist }}"
+        - "{{ homedirs }}"
+      become: yes
+
+    - name: user's ssh keys
+      copy:
+        src: "files/{{ item.0 }}.id_rsa.pub"
+        dest: "{{ item.1 }}/.ssh/authorized_keys"
+        owner: "{{ item.0 }}"
+        group: "{{ item.0 }}"
+        mode: 0600
+      with_together:
+        - "{{ userlist }}"
+        - "{{ homedirs }}"
+      when: item.0 != "root"
+      become: yes
+
+    - name: screen systemwide conf
+      copy:
+        src: templates/etc/screenrc
+        dest: /etc/screenrc
+        owner: root
+        group: root
+        mode: 0644
+        backup: yes
+      become: yes
+    - name: screen backtick
+      copy:
+        src: templates/usr/local/bin/screen.backtick
+        dest: /usr/local/bin/screen.backtick
+        owner: root
+        group: root
+        mode: 0755
+      become: yes
+
+    - name: tmux systemwide conf
+      copy:
+        src: templates/etc/tmux.conf
+        dest: /etc/tmux.conf
+        owner: root
+        group: root
+        mode: 0644
+        backup: yes
+      become: yes
+    - name: tmux bash completion
+      copy:
+        src: templates/etc/bash_completion.d/tmux
+        dest: /etc/bash_completion.d/tmux
+        owner: root
+        group: root
+        mode: 0644
+        backup: yes
+      become: yes
+    - name: tmux shortest name
+      shell: ln -s tmux t
+      ignore_errors: False
+      args:
+        chdir: /usr/bin
+      become: yes
+
+    - name: root ssh login must be forbidden
+      shell: sed -i.orig -e 's/^PermitRootLogin\s.*\|^#.*PermitRootLogin\s.*/PermitRootLogin no/' /etc/ssh/sshd_config
+      become: yes
+    - debug: msg="ssh daemon on {{ inventory_hostname }} should be restarted" verbosity=0
+
+    - name: additional locales conf
+      shell: sed -i.orig -e 's/.*pl_PL\.UTF-8.*/pl_PL.UTF-8 UTF-8/' -e 's/.*en_US\.UTF-8.*/en_US.UTF-8 UTF-8/' /etc/locale.gen
+      become: yes
+
+    - name: additional locales generate
+      shell: locale-gen
+      become: yes
+      register: stdout
+    - debug: msg="locale {{ stdout.stdout }} done" verbosity=0
+
+    - name: set default locale
+      shell: echo 'LANG=pl_PL.UTF-8' > /etc/default/locale
+      become: yes
+      register: stdout
+    - debug: msg="locale {{ stdout.stdout }} done" verbosity=0
+
+    - import_tasks: sysvinit.yml
+
+- name: local post-installation script
+  hosts: localhost
+  tasks:
+    - local_action: script local_scripts/post-install.sh
+

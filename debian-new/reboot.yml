@@ -1,0 +1,17 @@
+
+    - name: reboot the server
+      shell: sleep 5 && shutdown -r now
+      async: 1
+      poll: 0
+      become: yes
+    - name: Wait for server come back
+      wait_for: >
+           host={{ inventory_hostname }}
+           port=22
+           delay=15
+           timeout=600
+      delegate_to: localhost
+    - name: uptime
+      shell: uptime
+      register: stdout
+    - debug: msg="{{ stdout.stdout }}"
