@@ -41,3 +41,13 @@ virt-install \
 
 #virt-clone --connect qemu:///system --original d9 --name d9a --file /var/lib/libvirt/images/d9a.qcow2
 
+#pushd ansible
+#    ansible-playbook install.yml -kK
+#popd
+#virsh --connect qemu:///system shutdown $1
+#sleep 10
+#virt-clone --connect qemu:///system --original $1 --name $1a --file /var/lib/libvirt/images/$1a.qcow2
+#
+#virsh --connect qemu:///system undefine $1
+#virsh --connect qemu:///system vol-delete $1.qcow2 --pool default
+

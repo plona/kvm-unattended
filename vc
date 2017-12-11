@@ -19,7 +19,11 @@
 
 set -o nounset                              # Treat unset variables as an error
 
+pushd ansible
+    ansible-playbook install.yml -kK
+popd
 virsh --connect qemu:///system shutdown $1
+sleep 10
 virt-clone --connect qemu:///system --original $1 --name $1a --file /var/lib/libvirt/images/$1a.qcow2
 
 virsh --connect qemu:///system undefine $1

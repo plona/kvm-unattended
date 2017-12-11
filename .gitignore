@@ -1,3 +1,4 @@
 *.swp
+*.retry
 */log/*
 *.id_rsa.pub
