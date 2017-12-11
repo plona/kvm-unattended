@@ -52,12 +52,3 @@
         mode: 0644
       become: yes
 
-    - name: remove unused packages
-      shell: apt-get -yq autoremove
-      ignore_errors: yes
-      become: yes
-    - name: clean cache
-      ignore_errors: yes
-      shell: apt-get clean
-      become: yes
-

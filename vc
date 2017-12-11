@@ -1,0 +1,26 @@
+#!/bin/bash - 
+#===============================================================================
+#
+#          FILE: vc
+# 
+#         USAGE: ./vc
+# 
+#   DESCRIPTION: 
+# 
+#       OPTIONS: ---
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: Marek Płonka (marekpl), marek.plonka@nask.pl
+#  ORGANIZATION: NASK
+#       CREATED: 12/07/2017 12:38:30 PM
+#      REVISION:  ---
+#===============================================================================
+
+set -o nounset                              # Treat unset variables as an error
+
+virsh --connect qemu:///system shutdown $1
+virt-clone --connect qemu:///system --original $1 --name $1a --file /var/lib/libvirt/images/$1a.qcow2
+
+virsh --connect qemu:///system undefine $1
+virsh --connect qemu:///system vol-delete $1.qcow2 --pool default

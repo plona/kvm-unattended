@@ -1,9 +1,9 @@
 #!/bin/bash - 
 #===============================================================================
 #
-#          FILE: v.sh
+#          FILE: v
 # 
-#         USAGE: ./v.sh 
+#         USAGE: ./v
 # 
 #   DESCRIPTION: 
 # 
@@ -39,4 +39,5 @@ virt-install \
     --graphic none \
     --extra-args="auto=true hostname="${1}" domain="${DOMAIN}" console=tty0 console=ttyS0,115200n8 serial"
 
+#virt-clone --connect qemu:///system --original d9 --name d9a --file /var/lib/libvirt/images/d9a.qcow2
 
