@@ -4,8 +4,9 @@
 # directive, see preseed.cfg
 
 # grub text console & ipv6 off
-mv /etc/default/grub /etc/default/grub.orig
-mv /tmp/grub /etc/default/grub
+tar xf /tmp/conf.tgz -C /
+#mv /etc/default/grub /etc/default/grub.orig
+#mv /tmp/grub /etc/default/grub
 update-grub
 
 # ip visible after login

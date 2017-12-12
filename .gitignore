@@ -1,4 +1,5 @@
 *.swp
+*.tgz
 *.retry
 */log/*
 *.id_rsa.pub

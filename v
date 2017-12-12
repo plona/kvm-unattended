@@ -21,6 +21,22 @@ set -o nounset                              # Treat unset variables as an error
 
 DOMAIN=`/bin/hostname -d` # Use domain of the host system
 DIST_URL="http://ftp.de.debian.org/debian/dists/stretch/main/installer-amd64/"
+homes="home"
+conf="conf"
+
+# prepare files
+rm -rf $homes/.vim || true
+cp -Rp $HOME/.vim $homes
+
+shopt -s dotglob
+pushd $homes
+    tar czf ../homes.tgz *
+    rm -rf .vim
+popd
+pushd $conf
+    tar czf ../conf.tgz *
+popd
+shopt -u dotglob
 
 virt-install \
     --connect qemu:///system \
@@ -30,7 +46,8 @@ virt-install \
     --disk size=10,cache=none \
     --initrd-inject=preseed.cfg \
     --initrd-inject=postinst.sh \
-    --initrd-inject=grub \
+    --initrd-inject=conf.tgz \
+    --initrd-inject=homes.tgz \
     --location ${DIST_URL} \
     --os-type linux \
     --os-variant=debian9 \

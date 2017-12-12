@@ -1,0 +1,6 @@
+ENTRY "/etc" URL "/etc"
+ENTRY "/var/log" URL "/var/log"
+ENTRY "/usr/share" URL "/usr/share"
+ENTRY "/usr/local" URL "/usr/local"
+ENTRY "/mnt" URL "/mnt"
+ENTRY "/home" URL "/home"
