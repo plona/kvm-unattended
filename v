@@ -19,6 +19,8 @@
 
 set -o nounset                              # Treat unset variables as an error
 
+new_vm=$1
+new_vm_tmp="$new_vm""_tmp"
 DOMAIN=`/bin/hostname -d` # Use domain of the host system
 DIST_URL="http://ftp.de.debian.org/debian/dists/stretch/main/installer-amd64/"
 homes="home"
@@ -40,7 +42,7 @@ shopt -u dotglob
 
 virt-install \
     --connect qemu:///system \
-    --name=$1 \
+    --name=$new_vm_tmp \
     --memory=2048 \
     --vcpus=2 \
     --disk size=10,cache=writeback \
@@ -55,17 +57,15 @@ virt-install \
     --virt-type=kvm \
     --network network=default \
     --graphic none \
-    --extra-args="auto=true hostname="${1}" domain="${DOMAIN}" console=tty0 console=ttyS0,115200n8 serial"
+    --noreboot \
+    --extra-args="auto=true hostname="${new_vm}" domain="${DOMAIN}" console=tty0 console=ttyS0,115200n8 serial"
 
-#virt-clone --connect qemu:///system --original d9 --name d9a --file /var/lib/libvirt/images/d9a.qcow2
+rm -fv conf.tgz homes.tgz
+echo "wait a moment ..." 
+sleep 15
+virt-clone --connect qemu:///system --original $new_vm_tmp --name $new_vm --file /var/lib/libvirt/images/$new_vm.qcow2
 
-#pushd ansible
-#    ansible-playbook install.yml -kK
-#popd
-virsh --connect qemu:///system shutdown $1
-sleep 30
-virt-clone --connect qemu:///system --original $1 --name $1a --file /var/lib/libvirt/images/$1a.qcow2
-
-virsh --connect qemu:///system undefine $1
-virsh --connect qemu:///system vol-delete $1.qcow2 --pool default
+virsh --connect qemu:///system undefine $new_vm_tmp
+virsh --connect qemu:///system vol-delete $new_vm_tmp.qcow2 --pool default
+virsh --connect qemu:///system start "$new_vm" --console
 
