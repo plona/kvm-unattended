@@ -1,0 +1,13 @@
+# non-essential packages
+# can be safely uninstalled
+dictionaries-common
+emacsen-common
+iamerican
+ibritish
+ienglish-common
+laptop-detect
+nano
+task-english
+tasksel
+tasksel-data
+

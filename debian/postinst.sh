@@ -12,9 +12,7 @@ tar xf /tmp/conf.tgz -C /
 update-grub
 
 #users
-declare -A new_users
-new_users['plona']='/home/plona'
-new_users['fijal']='/home/fijal'
+. /tmp/users.txt
 for key in "${!new_users[@]}"; do
     val=${new_users[$key]}
     new_user="$key"
@@ -23,13 +21,9 @@ for key in "${!new_users[@]}"; do
     echo "$new_user:$new_user" | chpasswd
     usermod -aG sudo "$new_user"
     tar xf /tmp/homes.tgz -C "$new_home"
+    chmod 700 "$new_home"
     chown -R "$new_user":"$new_user" "$new_home"
 done
-#useradd -m -s /bin/bash plona
-#echo "plona:plona" | chpasswd
-#usermod -aG sudo plona
-#tar xf /tmp/homes.tgz -C /home/plona
-#chown -R plona:plona /home/plona
 tar xf /tmp/homes.tgz -C /root
 
 # ip visible after login
@@ -37,60 +31,19 @@ echo >> /etc/motd
 ip address show | grep -w inet >> /etc/motd
 echo >> /etc/motd
 
-# purge packages
+# packages
 export DEBIAN_FRONTEND=noninteractive
-apt-get purge -y \
-dictionaries-common \
-emacsen-common \
-iamerican \
-ibritish \
-ienglish-common \
-laptop-detect \
-nano \
-task-english \
-tasksel \
-tasksel-data
+
+# purge packages
+cat /tmp/packages_u.txt | \
+    sed -e 's/#.*$//' -e '/^$/d' | \
+    xargs apt-get -y purge 
 
 # install packages
 apt-get update
-apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install \
-apt-file \
-apt-transport-https \
-binutils \
-debian-goodies \
-deborphan \
-dnsutils \
-gawk \
-git \
-htop \
-less \
-lsb-release \
-lsof \
-mc \
-mlocate \
-net-tools \
-netcat-openbsd \
-ntp \
-ntpdate \
-openssh-server \
-openssl \
-parted \
-pv \
-resolvconf \
-rsync \
-screen \
-scsitools \
-sudo \
-sysv-rc \
-sysvinit-core \
-sysvinit-utils \
-tcpdump \
-tmux \
-tree \
-tshark \
-vim \
-wajig
-
+cat /tmp/packages_i.txt | \
+    sed -e 's/#.*$//' -e '/^$/d' | \
+    xargs apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install 
 apt-get -y autoremove
 
 # short tmux
@@ -106,9 +59,9 @@ echo 'LANG=pl_PL.UTF-8' > /etc/default/locale
 
 # replace systemd with sysvinit
 cd /etc
-[ -f inittab ] && mv inittab inittab.orig
+[ -f inittab ] && mv inittab inittab.orig_00
 cp /usr/share/sysvinit/inittab .
-sed -i.orig -e 's/^#T0:23:respawn:\/sbin\/getty -L ttyS0 9600 vt100/T0:123:respawn:\/sbin\/getty -L ttyS0 115200 xterm/' /etc/inittab
+sed -i.orig_01 -e 's/^#T0:23:respawn:\/sbin\/getty -L ttyS0 9600 vt100/T0:123:respawn:\/sbin\/getty -L ttyS0 115200 xterm/' /etc/inittab
 
 cp /tmp/firstboot.sh /root
 chmod a+x /root/firstboot.sh

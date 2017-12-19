@@ -23,8 +23,8 @@ new_vm=$1
 new_vm_tmp="$new_vm""_tmp"
 DOMAIN=`/bin/hostname -d` # Use domain of the host system
 DIST_URL="http://ftp.de.debian.org/debian/dists/stretch/main/installer-amd64/"
-homes="home"
-conf="conf"
+homes="../home"
+conf="../conf"
 
 # prepare files
 rm -rf $homes/.vim || true
@@ -32,11 +32,11 @@ cp -Rp $HOME/.vim $homes
 
 shopt -s dotglob
 pushd $homes
-    tar czf ../homes.tgz *
+    tar czf ../debian/homes.tgz *
     rm -rf .vim
 popd
 pushd $conf
-    tar czf ../conf.tgz *
+    tar czf ../debian/conf.tgz *
 popd
 shopt -u dotglob
 
@@ -51,6 +51,9 @@ virt-install \
     --initrd-inject=firstboot.sh \
     --initrd-inject=conf.tgz \
     --initrd-inject=homes.tgz \
+    --initrd-inject=packages_i.txt \
+    --initrd-inject=packages_u.txt \
+    --initrd-inject=users.txt \
     --location ${DIST_URL} \
     --os-type linux \
     --os-variant=debian9 \

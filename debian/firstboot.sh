@@ -26,7 +26,7 @@ done
 # userdel -r instalator
 
 # turn off firstboot
-rm -fv /etc/firstboot
+rm -fv /etc/cron.d/firstboot
 rm /root/firstboot.sh
 
 

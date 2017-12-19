@@ -1,0 +1,5 @@
+#!/bin/bash
+declare -A new_users
+new_users['plona']='/home/plona'
+new_users['fijal']='/home/fijal'
+

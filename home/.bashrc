@@ -20,6 +20,7 @@ alias mv='mv -i'
 alias mysql='mysql --pager="less -giJMS -x4 -FX" --prompt="\u@\h [\d]> "'
 alias mc='. /usr/lib/mc/mc-wrapper.sh -x'
 alias ssh='ssh -e none -t'
+alias apt-list-backports='aptitude search -t stretch-backports -F '\''%p %v -> %V'\'' '\''~U ~Abackports'\'''
 
 # long history and other options
 
