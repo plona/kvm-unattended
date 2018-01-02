@@ -45,7 +45,7 @@ virt-install \
     --name=$new_vm_tmp \
     --memory=2048 \
     --vcpus=2 \
-    --disk size=10,cache=writeback \
+    --disk size=20,cache=writeback \
     --initrd-inject=preseed.cfg \
     --initrd-inject=postinst.sh \
     --initrd-inject=firstboot.sh \
