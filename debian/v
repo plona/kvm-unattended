@@ -18,6 +18,7 @@
 #===============================================================================
 
 set -o nounset                              # Treat unset variables as an error
+set -o errexit
 
 new_vm=$1
 new_vm_tmp="$new_vm""_tmp"
