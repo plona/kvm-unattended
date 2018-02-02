@@ -16,14 +16,14 @@ mlocate
 net-tools
 netcat-openbsd
 ntp
-ntpdate
+#ntpdate
 openssh-server
 openssl
 parted
 pv
 resolvconf
 rsync
-screen
+#screen
 scsitools
 sudo
 sysv-rc
@@ -32,7 +32,7 @@ sysvinit-utils
 tcpdump
 tmux
 tree
-tshark
+#tshark
 vim
 wajig
 

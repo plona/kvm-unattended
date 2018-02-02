@@ -20,6 +20,7 @@ for key in "${!new_users[@]}"; do
     useradd -m -s /bin/bash "$new_user"
     echo "$new_user:$new_user" | chpasswd
     usermod -aG sudo "$new_user"
+    chage -d0 $new_user
     tar xf /tmp/homes.tgz -C "$new_home"
     chmod 700 "$new_home"
     chown -R "$new_user":"$new_user" "$new_home"

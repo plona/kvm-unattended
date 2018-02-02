@@ -23,7 +23,7 @@ while [ $ec -gt 0 ]; do
 done
 
 # delete user instalator
-# userdel -r instalator
+userdel -r instalator
 
 # turn off firstboot
 rm -fv /etc/cron.d/firstboot
