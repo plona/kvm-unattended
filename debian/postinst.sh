@@ -8,7 +8,7 @@ exec 1>/root/postinstall.log 2>&1
 # directive, see preseed.cfg
 
 # grub text console & ipv6 off. Default conf files 
-tar xf /tmp/conf.tgz -C /
+tar --extract --file=/tmp/conf.tgz --no-same-owner --directory=/
 update-grub
 
 #users
@@ -25,7 +25,7 @@ for key in "${!new_users[@]}"; do
     chmod 700 "$new_home"
     chown -R "$new_user":"$new_user" "$new_home"
 done
-tar xf /tmp/homes.tgz -C /root
+tar --extract --file=/tmp/homes.tgz --no-same-owner --directory=/root
 
 # ip visible after login
 echo >> /etc/motd

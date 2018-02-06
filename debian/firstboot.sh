@@ -22,11 +22,7 @@ while [ $ec -gt 0 ]; do
     ec=$(deborphan | wc -l)
 done
 
-# delete user instalator
-userdel -r instalator
-
 # turn off firstboot
-rm -fv /etc/cron.d/firstboot
-rm /root/firstboot.sh
+rm -fv /etc/cron.d/firstboot /root/firstboot.sh
 
 
